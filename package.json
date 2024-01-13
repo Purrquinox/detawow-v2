@@ -7,7 +7,7 @@
 		"start": "node ./dist/index",
 		"tsc": "tsc",
 		"format": "prettier --write --plugin-search-dir=src src",
-        "deploy": "node deploy"
+        "deploy": "node ./dist/deploy"
 	},
 	"keywords": [],
 	"author": "selectthegang",
