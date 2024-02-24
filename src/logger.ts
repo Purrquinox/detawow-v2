@@ -1,22 +1,21 @@
 // Packages
-import colors from "colors";
+import "colors";
 
-// Functions
-const info = (service, data) => {
-	console.log(`${"[INFO]".red} [${service.green}] => ${data}`);
-};
+// Info
+const info = (name: string, message: string) =>
+	console.log(`${"[INFO]".red} [${name.green}] => ${message}`);
 
-const error = (service, data) => {
-	console.log(`${"[ERROR]".red} [${service.green}] => ${data.red}`);
-};
+// Debug
+const debug = (name: string, message: string) =>
+	console.log(`${"[DEBUG]".green} [${name.green}] => ${message}`);
 
-const debug = (service, data) => {
-	console.log(`${"[DEBUG]".red} [${service.green}] => ${data.yellow}`);
-};
+// Error
+const error = (name: string, message: string) =>
+	console.log(`${"[ERROR]".red} [${name.green}] => ${message}`);
+
+// Success
+const success = (name: string, message: string) =>
+	console.log(`${"[SUCCESS]".green} [${name.green}] => ${message}`);
 
 // Export
-export default {
-	info,
-	error,
-	debug,
-};
+export { info, debug, error, success };

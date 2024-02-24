@@ -13,9 +13,10 @@ import fs from "node:fs";
 import markov from "markov";
 const chain = markov(1);
 import db from "./database/mongo.js";
-import logger from "./logger.js";
+import * as logger from "./logger.js";
 import * as dotenv from "dotenv";
 import * as path from "path";
+import data from "./data.js";
 
 // Configure dotenv
 dotenv.config();
@@ -49,7 +50,7 @@ client.on("debug", (info) => {
 
 // Error Event
 client.on("error", (error) => {
-	logger.error("Discord", error);
+	logger.error("Discord", error.toString());
 });
 
 // AI Chat Event

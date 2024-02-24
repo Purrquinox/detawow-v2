@@ -37,6 +37,8 @@ const commandFiles = getFilesInDirectory("./dist/commands").filter((file) =>
 );
 
 for (const file of commandFiles) {
+    console.log(file);
+    
 	import(`../${file}`)
 		.then((module) => {
 			const i: any = module.default;
@@ -47,8 +49,13 @@ for (const file of commandFiles) {
 		});
 }
 
-rest.put(Routes.applicationCommands(process.env.CLIENT_ID as string), {
-	body: commands,
-})
-	.then(console.log)
-	.catch(console.error);
+setTimeout(() => {
+	rest.put(Routes.applicationCommands(process.env.CLIENT_ID as string), {
+		body: commands,
+	})
+		.then((p) => {
+			console.log(p);
+			process.exit(0);
+		})
+		.catch(console.error);
+}, 3000);

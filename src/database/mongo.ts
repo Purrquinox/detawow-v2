@@ -1,6 +1,6 @@
 // Packages
 import mongoose from "mongoose";
-import logger from "../logger.js";
+import * as logger from "../logger.js";
 import * as dotenv from "dotenv";
 
 // Configure dotenv
@@ -22,18 +22,14 @@ const eval_public = {
 	},
 
 	async replace(obj) {
-		const data = await evalPublicSchema.find({});
-		let returned;
+		const data: {
+			input: string;
+			output: string;
+			language: string;
+			version: string;
+		}[] = await evalPublicSchema.find({});
 
-		evalPublicSchema.replaceOne(data[0], obj, null, (err, doc) => {
-			if (err) {
-				logger.error("400", `MongoDB Document Replace Error`, err);
-			} else {
-				returned = doc;
-			}
-		});
-
-		return returned;
+		return await evalPublicSchema.replaceOne(data[0], obj, null);
 	},
 };
 
@@ -44,18 +40,14 @@ const eval_private = {
 	},
 
 	async replace(obj) {
-		const data = await evalPrivateSchema.find({});
-		let returned;
+		const data: {
+			input?: string;
+			output?: string;
+			type?: string;
+			modal?: string;
+		}[] = await evalPrivateSchema.find({});
 
-		evalPrivateSchema.replaceOne(data[0], obj, null, (err, doc) => {
-			if (err) {
-				logger.error("400", `MongoDB Document Replace Error`, err);
-			} else {
-				returned = doc;
-			}
-		});
-
-		return returned;
+		return await evalPrivateSchema.replaceOne(data[0], obj, null);
 	},
 };
 
@@ -77,10 +69,10 @@ const aiChannels = {
 
 		doc.save()
 			.then(() => {
-				logger.info("200", "MongoDB Document Created", {});
+				logger.info("200", "MongoDB Document Created");
 			})
 			.catch((err) => {
-				logger.error("400", `MongoDB Document Create Error`, err);
+				logger.error("400", `MongoDB Document Create Error` + err);
 			});
 	},
 };
@@ -104,10 +96,10 @@ const users = {
 
 		doc.save()
 			.then(() => {
-				logger.info("200", "MongoDB Document Created", {});
+				logger.info("200", "MongoDB Document Created");
 			})
 			.catch((err) => {
-				logger.error("400", `MongoDB Document Create Error`, err);
+				logger.error("400", `MongoDB Document Create Error` + err);
 			});
 	},
 
@@ -119,17 +111,10 @@ const users = {
 		let badges = data.badges;
 		badges.push(badgeData);
 
-		usersSchema.replaceOne(
+		return await usersSchema.replaceOne(
 			{ user_id: data.user_id },
 			data,
-			null,
-			(err, doc) => {
-				if (err) {
-					logger.error("400", `MongoDB Document Replace Error`, err);
-				} else {
-					returned = doc;
-				}
-			}
+			null
 		);
 	},
 };

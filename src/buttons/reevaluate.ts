@@ -6,6 +6,7 @@ export default {
 		const data = await db.eval_private.get();
 		const code = data.input;
 
+		let embed;
 		const admins = client.admins;
 
 		if (!admins.includes(interaction.user.id)) return;

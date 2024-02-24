@@ -5,6 +5,7 @@ import {
 	TextInputStyle,
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import data from "../data.js";
 
 export default {
 	data: new SlashCommandBuilder()
@@ -12,7 +13,7 @@ export default {
 		.setDescription("Run bash commands inside of a container!"),
 	async execute(client, interaction, EmbedBuilder, codeBlock, db) {
 		let modal;
-		const admins = client.admins;
+		const admins = data.admins;
 
 		if (admins.includes(interaction.user.id)) {
 			modal = new ModalBuilder()
