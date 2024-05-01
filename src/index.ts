@@ -7,16 +7,12 @@ import {
 	EmbedBuilder,
 	SlashCommandBuilder,
 	ActivityType,
-	ChannelType,
 } from "discord.js";
 import fs from "node:fs";
-import markov from "markov";
-const chain = markov(1);
 import db from "./database/mongo.js";
 import * as logger from "./logger.js";
 import * as dotenv from "dotenv";
 import * as path from "path";
-import data from "./data.js";
 
 // Configure dotenv
 dotenv.config();
@@ -51,58 +47,6 @@ client.on("debug", (info) => {
 // Error Event
 client.on("error", (error) => {
 	logger.error("Discord", error.toString());
-});
-
-// AI Chat Event
-const ratelimit: Map<string, number> = new Map();
-
-client.on("messageCreate", async (message) => {
-	// Block Message
-	if (message.author.bot) return;
-	if (message.channel.type === ChannelType.DM) return;
-	if (process.env.NODE_ENV === "canary") return;
-
-	// Block message if channel is not in the database
-	let data = await db.aiChannels.get(message.channel.id);
-	if (!data) return;
-
-	// Block message if user is under the ratelimit
-	if (ratelimit.get(message.author.id)) return;
-
-	// Banned Users
-	if (bannedUsers.includes(message.author.id)) return;
-
-	// Ratelimit
-	const userData = await db.users.get(message.author.id);
-
-	if (userData) {
-		if (userData?.ratelimit === 0) return;
-		ratelimit.set(
-			message.author.id,
-			(userData?.ratelimit || 1) * 60 * 1000
-		);
-	} else ratelimit.set(message.author.id, 2 * 60 * 1000);
-
-	// Chain File
-	const file = fs.createReadStream(__dirname + `/${data.category}.txt`);
-
-	// Ask chain for response to user message and send
-	chain.seed(file, async () => {
-		message.channel.sendTyping();
-
-		setTimeout(() => {
-			const response = chain.respond(message.content);
-			message.reply(response.join(" "));
-		}, 2000);
-	});
-
-	// Remove user from ratelimit
-	setTimeout(
-		() => {
-			ratelimit.delete(message.author.id);
-		},
-		(userData?.ratelimit || 1) != 0 ? 0 : ratelimit.get(message.author.id)
-	);
 });
 
 // Get files from directory
@@ -182,37 +126,6 @@ for (const file of modalFiles) {
 		});
 }
 
-// Add Buttons
-const buttons: Map<
-	string,
-	{
-		data: {
-			name: string;
-		};
-		execute: (
-			client,
-			interaction,
-			EmbedBuilder,
-			codeBlock,
-			db
-		) => Promise<void>;
-	}
-> = new Map();
-const buttonFiles = getFilesInDirectory("./dist/buttons").filter((file) =>
-	file.endsWith(".js")
-);
-
-for (const file of buttonFiles) {
-	import(`../${file}`)
-		.then((module) => {
-			const i = module.default;
-			buttons.set(i.data.name, i);
-		})
-		.catch((error) => {
-			console.error(`Error importing ${file}: ${error}`);
-		});
-}
-
 // Interaction Event(s)
 client.on("interactionCreate", async (interaction) => {
 	// Block banned users
@@ -249,72 +162,6 @@ client.on("interactionCreate", async (interaction) => {
 			}
 		} else {
 			await interaction.reply("This command does not exist.");
-		}
-	}
-
-	// Button
-	if (interaction.isButton()) {
-		const button = buttons.get(interaction.customId);
-		const command = commands.get(interaction.customId);
-
-		if (button) {
-			try {
-				await button.execute(
-					client,
-					interaction,
-					EmbedBuilder,
-					codeBlock,
-					db
-				);
-			} catch (error) {
-				console.error(error);
-
-				let embed = new EmbedBuilder()
-					.setTitle("brain damage")
-					.setColor(0xff0000)
-					.addFields({
-						name: "Message",
-						value: codeBlock("javascript", error),
-						inline: false,
-					});
-
-				await interaction.reply({
-					embeds: [embed],
-				});
-			}
-		} else {
-			// Check if button is equal to a slash command
-			if (command) {
-				try {
-					await command.execute(
-						client,
-						interaction,
-						EmbedBuilder,
-						codeBlock,
-						db
-					);
-				} catch (error) {
-					console.error(error);
-
-					let embed = new EmbedBuilder()
-						.setTitle("brain damage")
-						.setColor(0xff0000)
-						.addFields({
-							name: "Message",
-							value: codeBlock("javascript", error),
-							inline: false,
-						});
-
-					await interaction.reply({
-						embeds: [embed],
-					});
-				}
-			} else {
-				// button does not equal to anything
-				await interaction.reply(
-					"This button does not have any functionality."
-				);
-			}
 		}
 	}
 

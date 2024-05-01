@@ -37,8 +37,8 @@ const commandFiles = getFilesInDirectory("./dist/commands").filter((file) =>
 );
 
 for (const file of commandFiles) {
-    console.log(file);
-    
+	console.log(file);
+
 	import(`../${file}`)
 		.then((module) => {
 			const i: any = module.default;
