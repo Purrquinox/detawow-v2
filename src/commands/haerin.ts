@@ -6,7 +6,7 @@ export default {
 		.setDescription("yes."),
 	async execute(client, interaction, EmbedBuilder, codeBlock, db) {
 		await interaction.reply({
-			content: "https://media.tenor.com/AhO27JOKpBAAAAPo/haerin-newjeans.mp4",
+			content: "https://media.tenor.com/AhO27JOKpBAAAAPo/haerin-newjeans.gif",
 			components: [
 				{
 					type: 1,
