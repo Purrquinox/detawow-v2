@@ -8,7 +8,7 @@ export default {
 		await interaction.reply({
 			files: [{
 				attachment: "https://c.tenor.com/AhO27JOKpBAAAAAC/tenor.gif",
-				name: "Haerin"
+				name: "Haerin.gif"
 			}],
 			components: [
 				{
