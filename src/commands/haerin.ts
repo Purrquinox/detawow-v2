@@ -7,8 +7,8 @@ export default {
 	async execute(client, interaction, EmbedBuilder, codeBlock, db) {
 		await interaction.reply({
 			files: [{
-				attachment: "https://media.tenor.com/AhO27JOKpBAAAAPo/haerin-newjeans.mp4",
-				name: "haerin-newjeans.mp4"
+				attachment: "https://c.tenor.com/AhO27JOKpBAAAAAC/tenor.gif",
+				name: "Haerin"
 			}],
 			components: [
 				{
